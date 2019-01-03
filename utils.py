@@ -12,6 +12,8 @@ def mean(l):
 def vs(x, y):
     if x == None or y == None:
         return False
+    if x['type'] == 1 and y['type'] == 7:
+        return True
     if x['type'] == 7 and y['type'] == 1:
         return False
     if x['type'] < y['type']:

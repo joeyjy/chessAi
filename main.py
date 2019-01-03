@@ -26,14 +26,17 @@ def index():
         print 'FLIP: '
         flip = ai.get_flip_score()
         print flip
-        collector = {'move': move, 'keep': keep, 'filp': flip}
+        collector = {'move': move, 'keep': keep, 'flip': flip}
 
-        scores = {'move': move['score'], 'keep': keep['score'], 'filp': flip['score']}
+        scores = {'move': move['score'], 'keep': keep['score'], 'flip': flip['score']}
         action = max(scores, key=scores.get)
+        if action == 'keep':
+            scores.pop('keep')
+            action = max(scores, key=scores.get)
         result = collector[action]
         print 'RESULT: '
         print result
-        if move['score'] == 0 and keep['score'] == 0 and flip['score'] == 0:
+        if (move['score'] == 0 and keep['score'] == 0) or (move['score'] == 0 and keep['score'] == 0 and flip['score'] == 0):
             if flip['block']:
                 return jsonify(
                     {
@@ -72,6 +75,7 @@ def index():
                 }
             )
         else:
+            # TODO
             return jsonify(
                 {
                     'pid': None,

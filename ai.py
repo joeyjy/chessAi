@@ -26,7 +26,14 @@ class Ai(object):
       def make_map(self):
             for b in self.blocks:
                   cood = toStr(b['x'], b['y'])
-                  self.blocks_map[cood] = b['piece']
+                  if b['piece']:
+                        self.blocks_map[cood] = b['piece']
+                  else:
+                        side = 2 if self.side == 1 else 1
+                        empty_piece = {'hasFlip': True, 'type': 0,
+                                       'side': side,
+                                       'x': b['x'], 'y': b['y']}
+                        self.blocks_map[cood] = empty_piece
 
       def divide_side(self):
             for b in self.blocks:
@@ -99,11 +106,11 @@ class Ai(object):
                                     socre = score + POINTS[up_right['type']]/10
                               if vs(b, down_right):
                                     socre = score + POINTS[down_right['type']]/10
-                              if [right_two, up_right, down_right].count(True) > 1:
+                              if [vs(b, right_two), vs(b, up_right), vs(b, down_right)].count(True) > 1:
                                     vs1 = POINTS[right_two['type']] if vs(b, right_two) else 0
                                     vs2 = POINTS[up_right['type']] if vs(b, up_right) else 0
                                     vs3 = POINTS[down_right['type']] if vs(b, down_right) else 0
-                                    score = min([vs1, vs2, vs3])
+                                    score = score + min([vs1, vs2, vs3])
                         # kill and then be killed, killed by cannon or others
                         if (right_two and right_two['hasFlip'] and self.side != right_two['side'] and vs(right_two, b)) or\
                            (up_right and up_right['hasFlip'] and self.side != up_right['side'] and vs(up_right, b)) or\
@@ -127,11 +134,11 @@ class Ai(object):
                                     socre = score + POINTS[up_left['type']]/10
                               if vs(b, down_left):
                                     socre = score + POINTS[down_left['type']]/10
-                              if [left_two, up_left, down_left].count(True) > 1:
+                              if [vs(b, left_two), vs(b, up_left), vs(b, down_left)].count(True) > 1:
                                     vs1 = POINTS[left_two['type']] if vs(b, left_two) else 0
                                     vs2 = POINTS[up_left['type']] if vs(b, up_left) else 0
                                     vs3 = POINTS[down_left['type']] if vs(b, down_left) else 0
-                                    score = min([vs1, vs2, vs3])
+                                    score = score + min([vs1, vs2, vs3])
                         if (left_two and left_two['hasFlip'] and self.side != left_two['side'] and vs(left_two, b)) or\
                            (up_left and up_left['hasFlip'] and self.side != up_left['side'] and vs(up_left, b)) or\
                            (down_left and down_left['hasFlip'] and self.side != down_left['side'] and vs(down_left, b)) or\
@@ -154,11 +161,11 @@ class Ai(object):
                                     socre = score + POINTS[up_left['type']]/10
                               if vs(b, up_right):
                                     socre = score + POINTS[up_right['type']]/10
-                              if [up_two, up_left, up_right].count(True) > 1:
+                              if [vs(b, up_two), vs(b, up_left), vs(b, up_right)].count(True) > 1:
                                     vs1 = POINTS[up_two['type']] if vs(b, up_two) else 0
                                     vs2 = POINTS[up_left['type']] if vs(b, up_left) else 0
                                     vs3 = POINTS[up_right['type']] if vs(b, up_right) else 0
-                                    score = min([vs1, vs2, vs3])
+                                    score = score + min([vs1, vs2, vs3])
                         if (up_two and up_two['hasFlip'] and self.side != up_two['side'] and vs(up_two, b)) or\
                            (up_left and up_left['hasFlip'] and self.side != up_left['side'] and vs(up_left, b)) or\
                            (up_right and up_right['hasFlip'] and self.side != up_right['side'] and vs(up_right, b)) or\
@@ -181,11 +188,11 @@ class Ai(object):
                                     socre = score + POINTS[down_right['type']]/10
                               if vs(b, down_left):
                                     socre = score + POINTS[down_left['type']]/10
-                              if [down_two, down_right, down_left].count(True) > 1:
+                              if [vs(b, down_two), vs(b, down_right), vs(b, down_left)].count(True) > 1:
                                     vs1 = POINTS[down_two['type']] if vs(b, down_two) else 0
                                     vs2 = POINTS[down_right['type']] if vs(b, down_right) else 0
                                     vs3 = POINTS[down_left['type']] if vs(b, down_left) else 0
-                                    score = min([vs1, vs2, vs3])
+                                    score = score + min([vs1, vs2, vs3])
                         if (down_two and down_two['hasFlip'] and self.side != down_two['side'] and vs(down_two, b)) or\
                            (down_right and down_right['hasFlip'] and self.side != down_right['side'] and vs(down_right, b)) or\
                            (down_left and down_left['hasFlip'] and self.side != down_left['side'] and vs(down_left, b)) or\
