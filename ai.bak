@@ -1,7 +1,7 @@
 from __future__ import division
 
 from const import POINTS
-from utils import toStr, getMax, mean, vs
+from utils import toStr, mean, vs
 
 class Ai(object):
 
@@ -68,8 +68,6 @@ class Ai(object):
             big_block = {}
             ai_kill_block = {}
             current_round = self.blocks_map
-            move_map = {}
-            to_map = {}
             for b in self.ai_flipped:
                   right_one = self.blocks_map.get(toStr(b['x']+1, b['y']), None)
                   right_two = self.blocks_map.get(toStr(b['x']+2, b['y']), None)
@@ -97,7 +95,6 @@ class Ai(object):
                   down_left_two = self.blocks_map.get(toStr(b['x']-2, b['y']-1), None)
                   
                   # can kill, not cannon
-                  init_score = -9999
                   if right_one and right_one['hasFlip'] and self.side != right_one['side'] and b['type'] != 2 and vs(b, right_one):
                         score = POINTS[right_one['type']]
                         if (right_two and right_two['hasFlip'] and self.side != right_two['side'] and vs(b, right_two)) or\
@@ -122,11 +119,11 @@ class Ai(object):
                            (right_up_two and right_up_two['hasFlip'] and self.side != right_up_two['side'] and right_up_two['type'] == 2) or\
                            (right_down_two and right_down_two['hasFlip'] and self.side != right_down_two['side'] and right_down_two['type'] == 2):
                               score = 0 - POINTS[b['type']]
-                        if score > init_score:
-                              init_score = score
-                              move_map[toStr(b['x'], b['y'])] = score
-                              to_map[toStr(b['x'], b['y'])] = right_one
-                  elif left_one and left_one['hasFlip'] and self.side != left_one['side'] and b['type'] != 2 and vs(b, left_one):
+                        if score > big_score:
+                              big_score = score
+                              big_block = right_one
+                              ai_kill_block = b
+                  if left_one and left_one['hasFlip'] and self.side != left_one['side'] and b['type'] != 2 and vs(b, left_one):
                         score = POINTS[left_one['type']]
                         if (left_two and left_two['hasFlip'] and self.side != left_two['side'] and vs(b, left_two)) or\
                            (up_left and up_left['hasFlip'] and self.side != up_left['side'] and vs(b, up_left)) or\
@@ -149,11 +146,11 @@ class Ai(object):
                            (left_up_two and left_up_two['hasFlip'] and self.side != left_up_two['side'] and left_up_two['type'] == 2) or\
                            (left_down_two and left_down_two['hasFlip'] and self.side != left_down_two['side'] and left_down_two['type'] == 2):
                               score = 0 - POINTS[b['type']]
-                        if score > init_score:
-                              init_score = score
-                              move_map[toStr(b['x'], b['y'])] = score
-                              to_map[toStr(b['x'], b['y'])] = left_one
-                  elif up_one and up_one['hasFlip'] and self.side != up_one['side'] and b['type'] != 2 and vs(b, up_one):
+                        if score > big_score:
+                              big_score = score
+                              big_block = left_one
+                              ai_kill_block = b
+                  if up_one and up_one['hasFlip'] and self.side != up_one['side'] and b['type'] != 2 and vs(b, up_one):
                         score = POINTS[up_one['type']]
                         if (up_two and up_two['hasFlip'] and self.side != up_two['side'] and vs(b, up_two)) or\
                            (up_left and up_left['hasFlip'] and self.side != up_left['side'] and vs(b, up_left)) or\
@@ -176,11 +173,11 @@ class Ai(object):
                            (up_right_two and up_right_two['hasFlip'] and self.side != up_right_two['side'] and up_right_two['type'] == 2) or\
                            (up_left_two and up_left_two['hasFlip'] and self.side != up_left_two['side'] and up_left_two['type'] == 2):
                               score = 0 - POINTS[b['type']]
-                        if score > init_score:
-                              init_score = score
-                              move_map[toStr(b['x'], b['y'])] = score
-                              to_map[toStr(b['x'], b['y'])] = up_one
-                  elif down_one and down_one['hasFlip'] and self.side != down_one['side'] and b['type'] != 2 and vs(b, down_one):
+                        if score > big_score:
+                              big_score = score
+                              big_block = up_one
+                              ai_kill_block = b
+                  if down_one and down_one['hasFlip'] and self.side != down_one['side'] and b['type'] != 2 and vs(b, down_one):
                         score = POINTS[down_one['type']]
                         if (down_two and down_two['hasFlip'] and self.side != down_two['side'] and vs(b, down_two)) or\
                            (down_right and down_right['hasFlip'] and self.side != down_right['side'] and vs(b, down_right)) or\
@@ -203,84 +200,63 @@ class Ai(object):
                            (down_right_two and down_right_two['hasFlip'] and self.side != down_right_two['side'] and down_right_two['type'] == 2) or\
                            (down_left_two and down_left_two['hasFlip'] and self.side != down_left_two['side'] and down_left_two['type'] == 2):
                               score = 0 - POINTS[b['type']]
-                        if score > init_score:
-                              init_score = score
-                              move_map[toStr(b['x'], b['y'])] = score
-                              to_map[toStr(b['x'], b['y'])] = down_one
+                        if score > big_score:
+                              big_score = score
+                              big_block = down_one
+                              ai_kill_block = b
                   # can kill, cannon
-                  elif right_two and right_two['hasFlip'] and self.side != right_two['side'] and b['type'] == 2:
-                        if right_one and right_one['type'] != 0:
-                              score = POINTS[right_two['type']]
-                              if score > init_score:
-                                    init_score = score
-                                    move_map[toStr(b['x'], b['y'])] = score
-                                    to_map[toStr(b['x'], b['y'])] = right_two
-                  elif left_two and left_two['hasFlip'] and self.side != left_two['side'] and b['type'] == 2:
-                        if left_one and left_one['type'] != 0:
-                              score = POINTS[left_two['type']]
-                              if score > init_score:
-                                    init_score = score
-                                    move_map[toStr(b['x'], b['y'])] = score
-                                    to_map[toStr(b['x'], b['y'])] = left_two
-                  elif up_two and up_two['hasFlip'] and self.side != up_two['side'] and b['type'] == 2:
-                        if up_one and up_one['type'] != 0:
-                              score = POINTS[up_two['type']]
-                              if score > init_score:
-                                    init_score = score
-                                    move_map[toStr(b['x'], b['y'])] = score
-                                    to_map[toStr(b['x'], b['y'])] = up_two
-                  elif down_two and down_two['hasFlip'] and self.side != down_two['side'] and b['type'] == 2:
-                        if down_one and down_one['type'] != 0:
-                              score = POINTS[down_two['type']]
-                              if score > init_score:
-                                    init_score = score
-                                    move_map[toStr(b['x'], b['y'])] = score
-                                    to_map[toStr(b['x'], b['y'])] = down_two
+                  if right_two and right_two['hasFlip'] and self.side != right_two['side'] and b['type'] == 2:
+                        score = POINTS[right_two['type']]
+                        if score > big_score:
+                              big_score = score
+                              big_block = right_two
+                              ai_kill_block = b
+                  if left_two and left_two['hasFlip'] and self.side != left_two['side'] and b['type'] == 2:
+                        score = POINTS[left_two['type']]
+                        if score > big_score:
+                              big_score = score
+                              big_block = left_two
+                              ai_kill_block = b
+                  if up_two and up_two['hasFlip'] and self.side != up_two['side'] and b['type'] == 2:
+                        score = POINTS[up_two['type']]
+                        if score > big_score:
+                              big_score = score
+                              big_block = up_two
+                              ai_kill_block = b
+                  if down_two and down_two['hasFlip'] and self.side != down_two['side'] and b['type'] == 2:
+                        score = POINTS[down_two['type']]
+                        if score > big_score:
+                              big_score = score
+                              big_block = down_two
+                              ai_kill_block = b
                   # can kill, cannon steal
-                  elif right_two and not right_two['hasFlip'] and b['type'] == 2:
-                        if right_one and right_one['type'] != 0:
-                              score = -(self.expect_score) * 3
-                              if score > init_score:
-                                    init_score = score
-                                    move_map[toStr(b['x'], b['y'])] = score
-                                    to_map[toStr(b['x'], b['y'])] = right_two
-                  elif left_two and not left_two['hasFlip'] and b['type'] == 2:
-                        if left_one and left_one['type'] != 0:
-                              score = -(self.expect_score) * 3
-                              if score > init_score:
-                                    init_score = score
-                                    move_map[toStr(b['x'], b['y'])] = score
-                                    to_map[toStr(b['x'], b['y'])] = left_two
-                  elif up_two and not up_two['hasFlip'] and b['type'] == 2:
-                        if up_one and up_one['type'] != 0:
-                              score = -(self.expect_score) * 3
-                              if score > init_score:
-                                    init_score = score
-                                    move_map[toStr(b['x'], b['y'])] = score
-                                    to_map[toStr(b['x'], b['y'])] = up_two
-                  elif down_two and not down_two['hasFlip'] and b['type'] == 2:
-                        if down_one and down_one['type'] != 0:
-                              score = -(self.expect_score) * 3
-                              if score > init_score:
-                                    init_score = score
-                                    move_map[toStr(b['x'], b['y'])] = score
-                                    to_map[toStr(b['x'], b['y'])] = down_two
-                  else:
-                        # TODO
-                        continue
-                        score = 0
-                        move_map[toStr(b['x'], b['y'])] = score
-                        to_map[toStr(b['x'], b['y'])] = None
-
-            if move_map:
-                  max_block_key = getMax(move_map)
-                  big_block = self.blocks_map.get(max_block_key)
-                  big_score = max(move_map.values())
-                  ai_kill_block = to_map.get(max_block_key)
-                  return {'action': 'move', 'score': big_score, 'block': ai_kill_block, 'from': big_block}
-            else:
-                  return {'action': 'move', 'score': None, 'block': None, 'from': None}
-            
+                  if right_two and not right_two['hasFlip'] and b['type'] == 2:
+                        score = -(self.expect_score) * 3
+                        if score > big_score:
+                              big_score = score
+                              big_block = right_two
+                              ai_kill_block = b
+                  if left_two and not left_two['hasFlip'] and b['type'] == 2:
+                        score = -(self.expect_score) * 3
+                        if score > big_score:
+                              big_score = score
+                              big_block = left_two
+                              ai_kill_block = b
+                  if up_two and not up_two['hasFlip'] and b['type'] == 2:
+                        score = -(self.expect_score) * 3
+                        if score > big_score:
+                              big_score = score
+                              big_block = up_two
+                              ai_kill_block = b
+                  if down_two and not down_two['hasFlip'] and b['type'] == 2:
+                        score = -(self.expect_score) * 3
+                        if score > big_score:
+                              big_score = score
+                              big_block = down_two
+                              ai_kill_block = b
+                  # move, will be killed
+                              
+            return {'action': 'move', 'score': big_score, 'block': big_block, 'from': ai_kill_block}
       
       def get_keep_score(self):
             big_score = 0
@@ -403,9 +379,7 @@ class Ai(object):
             big_score = 0
             big_block = {}
             current_round = self.blocks_map
-            unflipped = self.ai_unflipped + self.player_unflipped
-            unflipped_map = {}
-            for b in unflipped:
+            for b in self.player_flipped:
                   right_one = self.blocks_map.get(toStr(b['x']+1, b['y']), None)
                   right_two = self.blocks_map.get(toStr(b['x']+2, b['y']), None)
                   left_one = self.blocks_map.get(toStr(b['x']-1, b['y']), None)
@@ -421,86 +395,66 @@ class Ai(object):
 
                   # flip, if cannons in unfliped blocks
                   if cannon_len > 0:
-                        init_score = -9999
-                        if right_two and right_two['hasFlip'] and self.side != right_two['side'] and right_two['type'] != 0:
-                              if right_one and not right_one['hasFlip']:
-                                    score = POINTS[right_two['type']] / 50 * cannon_len
-                                    if score > init_score:
-                                          init_score = score
-                                          unflipped_map[toStr(b['x'], b['y'])] = score
-                        elif left_two and left_two['hasFlip'] and self.side != left_two['side'] and left_two['type'] != 0:
-                              if left_one and not left_one['hasFlip']:
-                                    score = POINTS[left_two['type']] / 50 * cannon_len
-                                    if score > init_score:
-                                          init_score = score
-                                          unflipped_map[toStr(b['x'], b['y'])] = score
-                        elif up_two and up_two['hasFlip'] and self.side != up_two['side'] and up_two['type'] != 0:
-                              if up_one and not up_one['hasFlip']:
-                                    score = POINTS[up_two['type']] / 50 * cannon_len
-                                    if score > init_score:
-                                          init_score = score
-                                          unflipped_map[toStr(b['x'], b['y'])] = score
-                        elif down_two and down_two['hasFlip'] and self.side != down_two['side'] and down_two['type'] != 0:
-                              if down_one and not down_one['hasFlip']:
-                                    score = POINTS[down_two['type']] / 50 * cannon_len
-                                    if score > init_score:
-                                          init_score = score
-                                          unflipped_map[toStr(b['x'], b['y'])] = score
-                        else:
-                              score = self.expect_score / 50
-                              unflipped_map[toStr(b['x'], b['y'])] = score
+                        if right_one and not right_one['hasFlip'] and right_two and not right_two['hasFlip']:
+                              score = POINTS[b['type']] / 50 * cannon_len
+                              if score > big_score:
+                                    big_score = score
+                                    big_block = right_two
+                              current_round.pop(toStr(right_two['x'], right_two['y']), None)
+                        if left_one and not left_one['hasFlip'] and left_two and not left_two['hasFlip']:
+                              score = POINTS[b['type']] / 50 * cannon_len
+                              if score > big_score:
+                                    big_score = score
+                                    big_block = left_two
+                              current_round.pop(toStr(left_two['x'], left_two['y']), None)
+                        if up_one and not up_one['hasFlip'] and up_two and not up_two['hasFlip']:
+                              score = POINTS[b['type']] / 50 * cannon_len
+                              if score > big_score:
+                                    big_score = score
+                                    big_block = up_two
+                              current_round.pop(toStr(up_two['x'], up_two['y']), None)
+                        if down_one and not down_one['hasFlip'] and down_two and not down_two['hasFlip']:
+                              score = POINTS[b['type']] / 50 * cannon_len
+                              if score > big_score:
+                                    big_score = score
+                                    big_block = down_two
+                              current_round.pop(toStr(down_two['x'], down_two['y']), None)
                   # flip, if no cannon in unfliped blocks
                   else:
-                        init_score = -9999
-                        if right_one and right_one['hasFlip'] and self.side != right_one['side']:
-                              score = (self.expect_score - POINTS[right_one['type']]) / 50
-                              if score > init_score:
-                                    init_score = score
-                                    unflipped_map[toStr(b['x'], b['y'])] = score
-                        elif left_one and left_one['hasFlip'] and self.side != left_one['side']:
-                              score = (self.expect_score - POINTS[left_one['type']]) / 50
-                              if score > init_score:
-                                    init_score = score
-                                    unflipped_map[toStr(b['x'], b['y'])] = score
-                        elif up_one and up_one['hasFlip'] and self.side != up_one['side']:
-                              score = (self.expect_score - POINTS[up_one['type']]) / 50
-                              if score > init_score:
-                                    init_score = score
-                                    unflipped_map[toStr(b['x'], b['y'])] = score
-                        elif down_one and down_one['hasFlip'] and self.side != down_one['side']:
-                              score = (self.expect_score - POINTS[down_one['type']]) / 50
-                              if score > init_score:
-                                    init_score = score
-                                    unflipped_map[toStr(b['x'], b['y'])] = score
-                        elif up_right and up_right['hasFlip'] and self.side != up_right['side']:
-                              score = (self.expect_score - POINTS[up_right['type']]) / 50
-                              if score > init_score:
-                                    init_score = score
-                                    unflipped_map[toStr(b['x'], b['y'])] = score
-                        elif up_left and up_left['hasFlip'] and self.side != up_left['side']:
-                              score = (self.expect_score - POINTS[up_left['type']]) / 50
-                              if score > init_score:
-                                    init_score = score
-                                    unflipped_map[toStr(b['x'], b['y'])] = score
-                        elif down_right and down_right['hasFlip'] and self.side != down_right['side']:
-                              score = (self.expect_score - POINTS[down_right['type']]) / 50
-                              if score > init_score:
-                                    init_score = score
-                                    unflipped_map[toStr(b['x'], b['y'])] = score
-                        elif down_left and down_left['hasFlip'] and self.side != down_left['side']:
-                              score = (self.expect_score - POINTS[down_left['type']]) / 50
-                              if score > init_score:
-                                    init_score = score
-                                    unflipped_map[toStr(b['x'], b['y'])] = score
-                        else:
-                              score = self.expect_score / 50
-                              unflipped_map[toStr(b['x'], b['y'])] = score
+                        if right_one and not right_one['hasFlip']:
+                              score = (self.expect_score - POINTS[b['type']]) / 50
+                              if score > big_score:
+                                    big_score = score
+                                    big_block = right_one
+                              current_round.pop(toStr(right_one['x'], right_one['y']), None)
+                        if left_one and not left_one['hasFlip']:
+                              score = (self.expect_score - POINTS[b['type']]) / 50
+                              if score > big_score:
+                                    big_score = score
+                                    big_block = left_one
+                              current_round.pop(toStr(left_one['x'], left_one['y']), None)
+                        if up_one and not up_one['hasFlip']:
+                              score = (self.expect_score - POINTS[b['type']]) / 50
+                              if score > big_score:
+                                    big_score = score
+                                    big_block = up_one
+                              current_round.pop(toStr(up_one['x'], up_one['y']), None)
+                        if down_one and not down_one['hasFlip']:
+                              score = (self.expect_score - POINTS[b['type']]) / 50
+                              if score > big_score:
+                                    big_score = score
+                                    big_block = down_one
+                              current_round.pop(toStr(down_one['x'], down_one['y']), None)
 
-            if unflipped_map:
-                  max_block_key = getMax(unflipped_map)
-                  big_block = self.blocks_map.get(max_block_key)
-                  big_score = max(unflipped_map.values())
-                  return {'action': 'flip', 'score': big_score, 'block': big_block, 'from': None}
-            else:
-                  return {'action': 'flip', 'score': None, 'big_block': None, 'from': None}
+            other_score = self.expect_score / 50
+            if other_score > big_score:
+                  big_score = other_score
+                  current_unflipped = {}
+                  for k, v in current_round.iteritems():
+                        if v and not v['hasFlip']:
+                              current_unflipped[k] = current_round[k]
+                  if current_unflipped:
+                        big_block = current_unflipped.values()[0]
 
+            return {'action': 'flip', 'score': big_score, 'block': big_block, 'from': None}
+                  

@@ -9,6 +9,9 @@ def mean(l):
     else:
         return 0
 
+def getMax(d):
+    return max(d, key=d.get)
+
 def vs(x, y):
     if x == None or y == None:
         return False

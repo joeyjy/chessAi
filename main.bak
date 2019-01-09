@@ -36,6 +36,25 @@ def index():
         result = collector[action]
         print 'RESULT: '
         print result
+        if (move['score'] == 0 and keep['score'] == 0) or (move['score'] == 0 and keep['score'] == 0 and flip['score'] == 0):
+            if flip['block']:
+                return jsonify(
+                    {
+                        'pid': flip['block']['id'],
+                        'type': 'flip',
+                        'x': None,
+                        'y': None
+                    }
+                )
+            else:
+                return jsonify(
+                    {
+                        'pid': None,
+                        'type': 'keep',
+                        'x': None,
+                        'y': None
+                    }
+                )
 
         if result['action'] == 'move':
             return jsonify(
@@ -65,6 +84,14 @@ def index():
                     'y': None
                 }
             )
+        return jsonify(
+            {
+                'pid': None,
+                'type': 'keep',
+                'x': None,
+                'y': None
+            }
+        )
 
 if __name__ == '__main__':
     app.run()
