@@ -1,6 +1,11 @@
+import logging
+
 from flask import Flask, jsonify, request
 
 from ai import Ai
+
+LOG_FORMAT = "%(message)s"
+logging.basicConfig(filename='/tmp/ai.log', level=logging.ERROR, format=LOG_FORMAT)
 
 app = Flask(__name__)
 app.url_map.strict_slashes = False
@@ -14,18 +19,13 @@ def index():
 
         ai = Ai(blocks, rawData['side'])
 
-        print 'EXPECT: '
-        print ai.expect_score
-        print '--------------------'
-        print 'MOVE: '
+        #logging.debug('EXPECT:' + str(ai.expect_score))
         move = ai.get_move_score()
-        print move
-        print 'KEEP: '
+        #logging.debug('MOVE:' + str(move))
         keep = ai.get_keep_score()
-        print keep
-        print 'FLIP: '
+        #logging.debug('KEEP:' + str(keep))
         flip = ai.get_flip_score()
-        print flip
+        #logging.debug('FLIP:' + str(flip))
         collector = {'move': move, 'keep': keep, 'flip': flip}
 
         scores = {'move': move['score'], 'keep': keep['score'], 'flip': flip['score']}
@@ -34,8 +34,7 @@ def index():
             scores.pop('keep')
             action = max(scores, key=scores.get)
         result = collector[action]
-        print 'RESULT: '
-        print result
+        logging.error(str({'EXPECT': ai.expect_score, 'MOVE': move, 'KEEP': keep, 'FLIP':flip, 'RESULT': result}))
 
         if result['action'] == 'move':
             return jsonify(
