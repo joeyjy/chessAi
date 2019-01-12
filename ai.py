@@ -285,43 +285,39 @@ class Ai(object):
 
                                           if vb['hasFlip'] and self.side != vb['side']:
                                                 score = POINTS[vb['type']]
-                                                vs1 = 0
-                                                vs2 = 0
-                                                vs3 = 0
-                                                vs4 = 0
-                                                if cannon_right_two and cannon_right_two['hasFlip'] and self.side != cannon_right_two['side']:
-                                                      vs1 = POINTS[cannon_right_two['type']]/10
-                                                if cannon_left_two and cannon_left_two['hasFlip'] and self.side != cannon_left_two['side']:
-                                                      vs2 = POINTS[cannon_left_two['type']]/10
-                                                if cannon_up_two and cannon_up_two['hasFlip'] and self.side != cannon_up_two['side']:
-                                                      vs3 = POINTS[cannon_up_two['type']]/10
-                                                if cannon_down_two and cannon_down_two['hasFlip'] and self.side != cannon_down_two['side']:
-                                                      vs3 = POINTS[cannon_down_two['type']]/10
-                                                if [vs1, vs2, vs3, vs4].count(0) == 3:
-                                                      score = score + vs1 + vs2 + vs3 + vs4
-                                                if [vs1, vs2, vs3, vs4].count(0) < 3:
-                                                      l = [vs1, vs2, vs3, vs4]
-                                                      l.remove(0)
-                                                      score = score + min(l)
-
-                                                if (cannon_right_one and cannon_right_one['hasFlip'] and self.side != cannon_right_one['side'] and vs(cannon_right_one, b)) or\
-                                                   (cannon_left_one and cannon_left_one['hasFlip'] and self.side != cannon_left_one['side'] and vs(cannon_left_one, b)) or\
-                                                   (cannon_up_one and cannon_up_one['hasFlip'] and self.side != cannon_up_one['side'] and vs(cannon_up_one, b)) or\
-                                                   (cannon_down_one and cannon_down_one['hasFlip'] and self.side != cannon_down_one['side'] and vs(cannon_down_one, b)) or\
-                                                   (cannon_right_two and cannon_right_two['hasFlip'] and self.side != cannon_right_two['side'] and cannon_right_two['type'] == 2) or\
-                                                   (cannon_left_two and cannon_left_two['hasFlip'] and self.side != cannon_left_two['side'] and cannon_left_two['type'] == 2) or\
-                                                   (cannon_up_two and cannon_up_two['hasFlip'] and self.side != cannon_up_two['side'] and cannon_up_two['type'] == 2) or\
-                                                   (cannon_down_two and cannon_down_two['hasFlip'] and self.side != cannon_down_two['side'] and cannon_down_two['type'] == 2):
-                                                      score = 0 - POINTS[b['type']]
-                                                if score > init_score:
-                                                      move_map[toStr(b['x'], b['y'])] = score
-                                                      to_map[toStr(b['x'], b['y'])] = vb
-
                                           if not vb['hasFlip']:
                                                 score = -(self.expect_score) * 3
-                                                if score > init_score:
-                                                      move_map[toStr(b['x'], b['y'])] = score
-                                                      to_map[toStr(b['x'], b['y'])] = vb
+                                          vs1 = 0
+                                          vs2 = 0
+                                          vs3 = 0
+                                          vs4 = 0
+                                          if cannon_right_two and cannon_right_two['hasFlip'] and self.side != cannon_right_two['side']:
+                                                vs1 = POINTS[cannon_right_two['type']]/10
+                                          if cannon_left_two and cannon_left_two['hasFlip'] and self.side != cannon_left_two['side']:
+                                                vs2 = POINTS[cannon_left_two['type']]/10
+                                          if cannon_up_two and cannon_up_two['hasFlip'] and self.side != cannon_up_two['side']:
+                                                vs3 = POINTS[cannon_up_two['type']]/10
+                                          if cannon_down_two and cannon_down_two['hasFlip'] and self.side != cannon_down_two['side']:
+                                                vs3 = POINTS[cannon_down_two['type']]/10
+                                          if [vs1, vs2, vs3, vs4].count(0) == 3:
+                                                score = score + vs1 + vs2 + vs3 + vs4
+                                          if [vs1, vs2, vs3, vs4].count(0) < 3:
+                                                l = [vs1, vs2, vs3, vs4]
+                                                l.remove(0)
+                                                score = score + min(l)
+
+                                          if (cannon_right_one and cannon_right_one['hasFlip'] and self.side != cannon_right_one['side'] and vs(cannon_right_one, b)) or\
+                                             (cannon_left_one and cannon_left_one['hasFlip'] and self.side != cannon_left_one['side'] and vs(cannon_left_one, b)) or\
+                                             (cannon_up_one and cannon_up_one['hasFlip'] and self.side != cannon_up_one['side'] and vs(cannon_up_one, b)) or\
+                                             (cannon_down_one and cannon_down_one['hasFlip'] and self.side != cannon_down_one['side'] and vs(cannon_down_one, b)) or\
+                                             (cannon_right_two and cannon_right_two['hasFlip'] and self.side != cannon_right_two['side'] and cannon_right_two['type'] == 2) or\
+                                             (cannon_left_two and cannon_left_two['hasFlip'] and self.side != cannon_left_two['side'] and cannon_left_two['type'] == 2) or\
+                                             (cannon_up_two and cannon_up_two['hasFlip'] and self.side != cannon_up_two['side'] and cannon_up_two['type'] == 2) or\
+                                             (cannon_down_two and cannon_down_two['hasFlip'] and self.side != cannon_down_two['side'] and cannon_down_two['type'] == 2):
+                                                score = 0 - POINTS[b['type']]
+                                          if score > init_score:
+                                                move_map[toStr(b['x'], b['y'])] = score
+                                                to_map[toStr(b['x'], b['y'])] = vb
                   else:
                         # TODO
                         continue
@@ -334,15 +330,19 @@ class Ai(object):
                   big_block = self.blocks_map.get(max_block_key)
                   big_score = max(move_map.values())
                   ai_kill_block = to_map.get(max_block_key)
-                  return {'action':'move','score':big_score,'block':ai_kill_block,'from': big_block}
+                  detail = {}
+                  for xy in move_map:
+                        detail[xy] = {'score': move_map[xy], 'to': to_map[xy]}
+                  return {'action':'move','score':big_score,'block':ai_kill_block,'from': big_block,'detail':detail}
             else:
-                  return {'action':'move','score':None,'block':None,'from':None}
+                  return {'action':'move','score':None,'block':None,'from':None,'detail':None}
             
       
       def get_keep_score(self):
             big_score = 0
             big_block = {}
             current_round = self.blocks_map
+            keep_map = {}
             for b in self.ai_flipped:
                   right_one = self.blocks_map.get(toStr(b['x']+1, b['y']), None)
                   right_two = self.blocks_map.get(toStr(b['x']+2, b['y']), None)
@@ -378,6 +378,7 @@ class Ai(object):
                                     if score > big_score:
                                           big_score = score
                                           big_block = b
+                                    keep_map[toStr(b['x'], b['y'])] = {'score' : score}
                   if left_one and left_one['hasFlip'] and self.side == left_one['side']:
                         if left_two and left_two['hasFlip'] and self.side != left_two['side'] or\
                            up_left and up_left['hasFlip'] and self.side != up_left['side'] or\
@@ -398,6 +399,7 @@ class Ai(object):
                                     if score > big_score:
                                           big_score = score
                                           big_block = b
+                                    keep_map[toStr(b['x'], b['y'])] = {'score' : score}
                   if up_one and up_one['hasFlip'] and self.side == up_one['side']:
                         if up_two and up_two['hasFlip'] and self.side != up_two['side'] or\
                            up_right and up_right['hasFlip'] and self.side != up_right['side'] or\
@@ -418,6 +420,7 @@ class Ai(object):
                                     if score > big_score:
                                           big_score = score
                                           big_block = b
+                                    keep_map[toStr(b['x'], b['y'])] = {'score' : score}
                   if down_one and down_one['hasFlip'] and self.side == down_one['side']:
                         if down_two and down_two['hasFlip'] and self.side != down_two['side'] or\
                            down_right and down_right['hasFlip'] and self.side != down_right['side'] or\
@@ -438,6 +441,7 @@ class Ai(object):
                                     if score > big_score:
                                           big_score = score
                                           big_block = b
+                                    keep_map[toStr(b['x'], b['y'])] = {'score' : score}
 
                   # keep, will be killed
                   if (right_one and self.side != right_one['side'] and vs(right_one, b)) \
@@ -452,8 +456,9 @@ class Ai(object):
                         if score > big_score:
                               big_score = score
                               big_block = b
+                        keep_map[toStr(b['x'], b['y'])] = {'score' : score}
 
-            return {'action':'keep','score':big_score,'block':big_block,'from':None}
+            return {'action':'keep','score':big_score,'block':big_block,'from':None, 'detail': keep_map}
 
       def get_flip_score(self):
             cannon_len = sum(b['type'] == 2 for b in self.ai_unflipped)
@@ -557,7 +562,10 @@ class Ai(object):
                   max_block_key = getMax(unflipped_map)
                   big_block = self.blocks_map.get(max_block_key)
                   big_score = max(unflipped_map.values())
-                  return {'action':'flip','score':big_score,'block':big_block,'from':None}
+                  detail = {}
+                  for xy in unflipped_map:
+                        detail[xy] = {'score': unflipped_map[xy]}
+                  return {'action':'flip','score':big_score,'block':big_block,'from':None,'detail':detail}
             else:
-                  return {'action':'flip','score':None,'big_block':None,'from':None}
+                  return {'action':'flip','score':None,'big_block':None,'from':None,'detail':None}
 

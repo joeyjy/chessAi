@@ -34,7 +34,7 @@ def index():
             scores.pop('keep')
             action = max(scores, key=scores.get)
         result = collector[action]
-        logging.error(str({'EXPECT': ai.expect_score, 'MOVE': move, 'KEEP': keep, 'FLIP':flip, 'RESULT': result}))
+        logging.error(str({'EXPECT': ai.expect_score, 'MOVE': move, 'KEEP': keep, 'FLIP':flip, 'RESULT': result, 'DETAIL': {'move': move['detail'], 'keep': keep['detail'], 'flip': flip['detail']}}))
 
         if result['action'] == 'move':
             return jsonify(
